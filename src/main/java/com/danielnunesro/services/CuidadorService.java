@@ -50,6 +50,28 @@ public class CuidadorService {
 		return CuidadorMapper.INSTANCE.toCuidadorDTO(cuidador);
 	}
 	
+	public CuidadorDTO update(String cpf, CuidadorDTO cuidadorUpdate) {
+		var existingCuidador = cuidadorRepository.findByCpf(cpf).orElseThrow(() -> new ResourceNotFoundException("Não achamos nenhum cuidador com esse ID"));
+		
+		existingCuidador.setName(cuidadorUpdate.getName());
+		existingCuidador.setLastName(cuidadorUpdate.getLastName());
+		existingCuidador.setEmail(cuidadorUpdate.getEmail());
+		existingCuidador.setCpf(cuidadorUpdate.getCpf());
+		existingCuidador.setRg(cuidadorUpdate.getRg());
+		existingCuidador.setBirthday(cuidadorUpdate.getBirthday());
+		existingCuidador.setTelefone(cuidadorUpdate.getTelefone());
+		
+		cuidadorRepository.save(existingCuidador);
+		return CuidadorMapper.INSTANCE.toCuidadorDTO(existingCuidador);
+		
+		
+    }
+	
+	public void delete(Long id) {
+		var existingCuidador = cuidadorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Não achamos nenhum cuidador com esse ID"));
+	}
+	
+	
 	
 	
 }
