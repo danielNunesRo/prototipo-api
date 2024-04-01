@@ -69,6 +69,7 @@ public class CuidadorService {
 	
 	public void delete(Long id) {
 		var existingCuidador = cuidadorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Não achamos nenhum cuidador com esse ID"));
+		cuidadorRepository.deleteById(id);
 	}
 	
 	
