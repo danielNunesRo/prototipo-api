@@ -3,6 +3,7 @@ package com.danielnunesro.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,21 @@ public class CuidadorService {
 	@Autowired
 	private CuidadorRepository cuidadorRepository;
 	
+	@Autowired
+	private NotificacaoService notificacaoService;
 	
+	private String exchange;
+	
+	
+	
+	
+	public CuidadorService(CuidadorRepository cuidadorRepository, NotificacaoService notificacaoService,
+			@Value("${rabbitmq.prototipo.exchange}")String exchange) {
+		this.cuidadorRepository = cuidadorRepository;
+		this.notificacaoService = notificacaoService;
+		this.exchange = exchange;
+	}
+
 	public List<CuidadorDTO> findAll() {
 		List<CuidadorDTO> list = CuidadorMapper.INSTANCE.toClienteDTOList(cuidadorRepository.findAll());
 		return list;
@@ -47,7 +62,10 @@ public class CuidadorService {
 		var cuidador = CuidadorMapper.INSTANCE.toCuidador(newCuidador);
 		cuidadorRepository.save(cuidador);
 		
-		return CuidadorMapper.INSTANCE.toCuidadorDTO(cuidador);
+		CuidadorDTO cuidadorDto= CuidadorMapper.INSTANCE.toCuidadorDTO(cuidador);
+		notificacaoService.notificar(cuidadorDto, exchange);
+		
+		return cuidadorDto;
 	}
 	
 	public CuidadorDTO update(String cpf, CuidadorDTO cuidadorUpdate) {
